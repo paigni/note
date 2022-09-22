@@ -1,46 +1,49 @@
 import argparse
-import sys
-
 from note_class import Note
 
 
 def create_parser():
-    parser = argparse.ArgumentParser(prog = 'Заметки',
-            description = '''Это очень полезная программа,
+    sssss = argparse.ArgumentParser(prog='Заметки',
+                                     description='''Это очень полезная программа,
                             которая позволяет создавать,смотреть 
                             и обновлять заметки.''',
-            epilog = '''-c – начало создание новой заметки
+                                     epilog='''-c – начало создание новой заметки
                         -s - показ списка заметок
                         -d<num>- удалить заметку под номером num
                         -e<num>- изменить заметку под номером num
                         -h- вывод справки об использовании'''
-            )
-    parser.add_argument('-c', required=True)
-    parser.add_argument('-s', required=True)
-    parser.add_argument('-d', default=1, type=int)
-    parser.add_argument('-e', default=1, type=int)
-    return parser
+                                     )
+    my_group = sssss.add_mutually_exclusive_group(required=True)
+    my_group.add_argument('-c', action='store_true')
+    my_group.add_argument('-s', action='store_true')
+    my_group.add_argument('-d', action='store', nargs=1, type=int)
+    my_group.add_argument('-e', action='store', nargs=1, type=int)
+    return sssss
 
 
-def action_with_note():
+def main():
     note = Note()
     parser = create_parser()
-    argum = parser.parse_args(sys.argv[1:])
+    argum = parser.parse_args()
 
-    if argum == '-c':
+
+    if argum.c:
         notes_header = input('Введите заголовок заметки\n')
         notes_text = input('Введите текст заметки\n')
-        note.create_new_note(notes_header, notes_text)
+        note.action_with_note(notes_header, notes_text)
 
-    elif argum == '-s':
-        note.read_note()
+    if argum.s:
+        note.show_notes()
 
-    elif argum == '-d':
-        note.delete_note(argum.d)
+    if argum.d:
+        print(argum.d)
+        note.delete_note(argum.d[0])
 
-    elif argum == '-e':
+    if argum.e:
         notes_header = input('Введите заголовок заметки\n')
         notes_text = input('Введите текст заметки\n')
-        note.change_note(notes_header, notes_text, argum.e)
+        note.action_with_note(notes_header, notes_text, argum.e)
 
-action_with_note()
+
+if __name__ == '__main__':
+    main()
